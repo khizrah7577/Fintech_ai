@@ -17,10 +17,10 @@ def render_welcome() -> None:
         st.markdown(
             f"""
             <div class="fw-welcome-card">
-              <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:2.4rem;
-                 font-weight:700;color:#174A40;margin:0;letter-spacing:-0.02em;">{APP_NAME}</p>
-              <p style="color:#68776E;margin:0.35rem 0 1.2rem 0;">{APP_SUBTITLE}</p>
-              <p style="color:#183D36;line-height:1.55;">
+              <p style="font-family:'Instrument Sans','DM Sans',sans-serif;font-size:2.35rem;
+                 font-weight:700;color:#0F1C3F;margin:0;letter-spacing:-0.03em;">{APP_NAME}</p>
+              <p style="color:#64748B;margin:0.35rem 0 1.2rem 0;">{APP_SUBTITLE}</p>
+              <p style="color:#0F172A;line-height:1.55;">
                 Welcome to FinWise AI — enter your monthly numbers, get deterministic
                 Python insights, then educational AI guidance powered by LangChain.
               </p>

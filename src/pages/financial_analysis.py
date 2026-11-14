@@ -1,4 +1,4 @@
-"""Main assignment workflow — inputs, Python calc, LLMChain, JSON, streaming."""
+"""Main assignment workflow — inputs, Python calc, LCEL chain, JSON, streaming."""
 
 from __future__ import annotations
 
@@ -170,7 +170,7 @@ def render_financial_analysis() -> None:
         if not has_api_key():
             st.error("Add an OpenAI API key in Settings or `.env` before AI analysis.")
         else:
-            with st.spinner("Running LLMChain analysis…"):
+            with st.spinner("Running AI analysis (LCEL chain)…"):
                 try:
                     llm = build_llm(
                         api_key=effective_api_key(),

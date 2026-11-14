@@ -79,13 +79,13 @@ def expense_pie(results: dict[str, Any]):
         color_discrete_sequence=[
             COLORS["primary"],
             COLORS["secondary"],
-            COLORS["sage"],
+            COLORS["accent"],
+            COLORS["success"],
             COLORS["warm"],
-            "#8FAE9B",
-            "#4F7568",
-            "#C4B59A",
-            "#2F5D52",
-            "#9BB8A8",
+            "#0EA5E9",
+            "#8B5CF6",
+            "#14B8A6",
+            "#64748B",
         ],
     )
     fig.update_layout(
@@ -113,13 +113,13 @@ def income_vs_expense_chart(results: dict[str, Any]):
                 name="Expenses",
                 x=["Monthly"],
                 y=[results.get("total_expenses", 0)],
-                marker_color=COLORS["warm"],
+                marker_color=COLORS["negative"],
             ),
             go.Bar(
                 name="Savings",
                 x=["Monthly"],
                 y=[results.get("savings", 0)],
-                marker_color=COLORS["sage"],
+                marker_color=COLORS["positive"],
             ),
         ]
     )

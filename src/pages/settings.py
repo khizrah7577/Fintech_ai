@@ -113,7 +113,15 @@ def render_settings() -> None:
     st.caption(DISCLAIMER_COMPACT)
     st.markdown(
         """
-**Tech stack:** Streamlit · LangChain (`ChatOpenAI`, `PromptTemplate`,
-`ChatPromptTemplate`, `LLMChain`, streaming) · OpenAI · python-dotenv
+**Tech stack:** Streamlit · LangChain LCEL (`ChatOpenAI`, `PromptTemplate`,
+`ChatPromptTemplate`, streaming) · OpenAI · python-dotenv
+
+**Streamlit Cloud secrets** (Settings → Secrets):
+```toml
+OPENAI_API_KEY = "sk-..."
+OPENAI_MODEL = "gpt-4o-mini"
+```
+
+Deploy with **Python 3.12** in Advanced settings.
         """
     )

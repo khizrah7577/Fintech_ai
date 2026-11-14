@@ -1,11 +1,17 @@
-streamlit>=1.32.0,<2
-langchain>=0.3.14,<0.4
-langchain-openai>=0.2.0,<0.3
-langchain-community>=0.3.14,<0.4
-langchain-core>=0.3.14,<0.4
-openai>=1.40.0,<2
-python-dotenv>=1.0.0
-pandas>=2.0.0
-plotly>=5.18.0
-pydantic>=2.0.0,<3
-reportlab>=4.0.0
+# Pinned for Streamlit Community Cloud + Python 3.12
+# Do NOT deploy on Python 3.14 — select Python 3.12 in Cloud Advanced settings.
+streamlit==1.41.1
+langchain==0.3.14
+langchain-core==0.3.29
+langchain-openai==0.2.14
+langchain-community==0.3.14
+openai==1.59.9
+pydantic==2.10.4
+python-dotenv==1.0.1
+pandas==2.2.3
+plotly==5.24.1
+reportlab==4.2.5
+tiktoken==0.8.0
+httpx==0.28.1
+tenacity==9.0.0
+langsmith>=0.1.125,<0.3

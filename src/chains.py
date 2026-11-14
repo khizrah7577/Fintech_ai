@@ -1,15 +1,21 @@
-"""ChatOpenAI, LLMChain, message demo, JSON analysis, streaming, and chat."""
+"""ChatOpenAI, LCEL analysis chain, message demo, streaming, and chat.
+
+Uses LangChain Expression Language (prompt | model | parser) instead of the
+deprecated LLMChain, which raises TypeError on Python 3.14+ during Pydantic
+model evaluation of langchain.chains.Chain.
+"""
 
 from __future__ import annotations
 
 import json
 from typing import Any, Generator, Iterator
 
-from langchain.chains import LLMChain
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import Runnable
 from langchain_openai import ChatOpenAI
 
-from src.config import DEFAULT_TEMPERATURE, OPENAI_API_KEY, OPENAI_MODEL
+import src.config as config
 from src.prompts import (
     ANALYSIS_CHAT_TEMPLATE,
     ANALYSIS_PROMPT,
@@ -37,10 +43,12 @@ def _prompt_inputs(inputs: dict[str, Any]) -> dict[str, Any]:
 
 
 def resolve_api_key(api_key: str | None = None) -> str:
-    key = (api_key or "").strip() or (OPENAI_API_KEY or "").strip()
+    # Read from config module each call so Streamlit secrets refresh works.
+    key = (api_key or "").strip() or (config.OPENAI_API_KEY or "").strip()
     if not key:
         raise ValueError(
-            "OPENAI_API_KEY is missing. Add it in Settings or set it in your .env file."
+            "OPENAI_API_KEY is missing. Add it in Settings, Streamlit Secrets, "
+            "or your local .env file."
         )
     return key
 
@@ -49,23 +57,27 @@ def build_llm(
     *,
     api_key: str | None = None,
     model: str | None = None,
-    temperature: float = DEFAULT_TEMPERATURE,
+    temperature: float | None = None,
     streaming: bool = False,
 ) -> ChatOpenAI:
     """Connect the app to an OpenAI chat model via ChatOpenAI."""
     key = resolve_api_key(api_key)
     return ChatOpenAI(
-        model=model or OPENAI_MODEL,
-        temperature=temperature,
+        model=model or config.OPENAI_MODEL,
+        temperature=config.DEFAULT_TEMPERATURE if temperature is None else temperature,
         api_key=key,
         streaming=streaming,
     )
 
 
-def build_analysis_chain(llm: ChatOpenAI | None = None) -> LLMChain:
-    """Reusable LLMChain that processes financial data into structured JSON text."""
+def build_analysis_chain(llm: ChatOpenAI | None = None) -> Runnable:
+    """
+    Reusable LCEL chain: PromptTemplate | ChatOpenAI | StrOutputParser.
+
+    Same role as the former LLMChain — returns plain text JSON for parsing.
+    """
     model = llm or build_llm()
-    return LLMChain(llm=model, prompt=ANALYSIS_PROMPT, verbose=False)
+    return ANALYSIS_PROMPT | model | StrOutputParser()
 
 
 def test_api_connection(
@@ -108,10 +120,10 @@ def run_structured_analysis(
     llm: ChatOpenAI | None = None,
 ) -> dict[str, Any]:
     """
-    Primary path: reusable LLMChain + PromptTemplate → structured JSON.
+    Primary path: LCEL (PromptTemplate | ChatOpenAI | StrOutputParser) → JSON.
 
-    ChatPromptTemplate is formatted for audit / assignment coverage; narrative
-    streaming uses NARRATIVE_CHAT_TEMPLATE separately.
+    ChatPromptTemplate is still formatted for audit / assignment coverage;
+    narrative streaming uses NARRATIVE_CHAT_TEMPLATE separately.
     """
     model = llm or build_llm()
     payload = _prompt_inputs(inputs)
@@ -119,16 +131,13 @@ def run_structured_analysis(
     chat_messages = ANALYSIS_CHAT_TEMPLATE.format_messages(**payload)
 
     chain = build_analysis_chain(model)
-    chain_raw = chain.invoke(payload)
-    chain_text = (
-        chain_raw.get("text") if isinstance(chain_raw, dict) else str(chain_raw)
-    )
+    chain_text = chain.invoke(payload)
 
     parsed = parse_analysis_json(chain_text)
     parsed["_prompt_audit"] = {
         "system_preview": str(chat_messages[0].content)[:240],
         "human_preview": str(chat_messages[1].content)[:240],
-        "chain_used": "LLMChain + PromptTemplate",
+        "chain_used": "LCEL: PromptTemplate | ChatOpenAI | StrOutputParser",
         "chat_template": "ChatPromptTemplate (analysis + narrative)",
     }
     return parsed

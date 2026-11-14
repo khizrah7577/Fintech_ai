@@ -13,6 +13,7 @@ from src.config import (
     APP_SUBTITLE,
     DISCLAIMER_COMPACT,
     NAV_PAGES,
+    refresh_secrets_from_streamlit,
 )
 from src.pages import PAGE_RENDERERS, render_welcome
 from src.session import init_session
@@ -25,6 +26,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+refresh_secrets_from_streamlit()
 init_session()
 inject_global_styles()
 
@@ -44,6 +46,7 @@ with st.sidebar:
         f'<p class="fw-side-sub">{APP_SUBTITLE}</p>',
         unsafe_allow_html=True,
     )
+    st.caption("Professional financial clarity")
     st.markdown("---")
 
     labels = [label for _, label in NAV_PAGES]
@@ -55,6 +58,10 @@ with st.sidebar:
 
     choice = st.radio("Navigate", labels, index=current_idx, label_visibility="collapsed")
     st.session_state.page = keys[labels.index(choice)]
+    st.markdown(
+        f'<div class="fw-nav-active">● {choice}</div>',
+        unsafe_allow_html=True,
+    )
 
     st.markdown("---")
     st.markdown(
@@ -62,7 +69,7 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
     st.caption("Model: " + str(st.session_state.model_name))
-    if st.button("Back to welcome"):
+    if st.button("Back to welcome", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
 

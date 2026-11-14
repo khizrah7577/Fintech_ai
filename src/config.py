@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import tempfile
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -10,14 +11,43 @@ from dotenv import load_dotenv
 ROOT_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT_DIR / ".env")
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+def _secret_or_env(name: str, default: str = "") -> str:
+    """Prefer Streamlit Cloud secrets, then environment / .env.
+
+    Streamlit is imported lazily so unit tests and non-UI modules do not
+    initialize a Streamlit runtime at import time.
+    """
+    env_val = (os.getenv(name, default) or default).strip()
+    try:
+        from streamlit import runtime
+
+        if runtime.exists():
+            import streamlit as st
+
+            if hasattr(st, "secrets") and name in st.secrets:
+                value = st.secrets.get(name)
+                if value is not None and str(value).strip():
+                    return str(value).strip()
+    except Exception:
+        pass
+    return env_val
+
+
+def refresh_secrets_from_streamlit() -> None:
+    """Reload API settings after Streamlit is running (optional)."""
+    global OPENAI_API_KEY, OPENAI_MODEL
+    OPENAI_API_KEY = _secret_or_env("OPENAI_API_KEY", OPENAI_API_KEY)
+    OPENAI_MODEL = _secret_or_env("OPENAI_MODEL", OPENAI_MODEL) or "gpt-4o-mini"
+
+
+OPENAI_API_KEY = _secret_or_env("OPENAI_API_KEY", "")
+OPENAI_MODEL = _secret_or_env("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
 
 APP_NAME = "FinWise AI"
 APP_SUBTITLE = "AI-Powered Personal Financial Analysis and Smart Budget Assistant"
 APP_TAGLINE = "Clarity for your month — then plan the next one."
 
-# Exact educational disclaimer (assignment + product requirement)
 EDUCATIONAL_DISCLAIMER = (
     "Educational prototype only. FinWise AI does not provide guaranteed investment "
     "advice, execute financial transactions, or connect to real bank accounts. "
@@ -72,7 +102,17 @@ SUPPORTED_MODELS = [
 ]
 
 DEFAULT_TEMPERATURE = 0.3
-SQLITE_CACHE_PATH = str(ROOT_DIR / "finwise_llm_cache.db")
+
+# Writable cache path (Cloud-safe)
+_SQLITE_DIR = ROOT_DIR
+try:
+    probe = ROOT_DIR / ".write_probe"
+    probe.write_text("ok", encoding="utf-8")
+    probe.unlink(missing_ok=True)
+except OSError:
+    _SQLITE_DIR = Path(tempfile.gettempdir())
+
+SQLITE_CACHE_PATH = str(_SQLITE_DIR / "finwise_llm_cache.db")
 
 HEALTH_BANDS = [
     (80, 100, "Strong", "strong"),
@@ -81,23 +121,28 @@ HEALTH_BANDS = [
     (0, 39, "High attention", "attention"),
 ]
 
-# Sage + earth palette
+# Modern fintech SaaS palette — navy / charcoal / blue accents
 COLORS = {
-    "bg": "#F5F4ED",
-    "sidebar": "#123F38",
-    "primary": "#174A40",
-    "secondary": "#668A75",
-    "sage": "#A3B8A1",
-    "light_sage": "#E7EFE8",
-    "cream": "#F8F5ED",
+    "bg": "#F4F6F9",
+    "sidebar": "#0B1220",
+    "sidebar_soft": "#121A2B",
+    "primary": "#1B4DFF",
+    "primary_dark": "#0F1C3F",
+    "secondary": "#3B82F6",
+    "accent": "#6366F1",
+    "sage": "#94A3B8",
+    "light_sage": "#E8EEF7",
+    "cream": "#F8FAFC",
     "card": "#FFFFFF",
-    "text": "#183D36",
-    "muted": "#68776E",
-    "border": "#DCE5DC",
-    "warm": "#B89C78",
-    "danger": "#A94442",
-    "warning": "#8A6D3B",
-    "success": "#2E6B4F",
+    "text": "#0F172A",
+    "muted": "#64748B",
+    "border": "#E2E8F0",
+    "warm": "#F59E0B",
+    "danger": "#EF4444",
+    "warning": "#F59E0B",
+    "success": "#10B981",
+    "positive": "#059669",
+    "negative": "#DC2626",
 }
 
 NAV_PAGES = [
@@ -110,8 +155,6 @@ NAV_PAGES = [
     ("settings", "Settings"),
 ]
 
-# Suggested 50/30/20-style educational allocation (needs / wants / savings)
-# Mapped loosely onto categories for the Budget Planner defaults.
 BUDGET_GUIDELINES = {
     "housing": 0.30,
     "food": 0.12,
@@ -122,7 +165,6 @@ BUDGET_GUIDELINES = {
     "entertainment": 0.08,
     "loan_debt": 0.10,
     "other": 0.05,
-    # Remaining ~10% intended for savings target
 }
 
 
