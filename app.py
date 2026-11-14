@@ -1,13 +1,14 @@
 """
 FinWise AI — Streamlit entrypoint.
 Run:  streamlit run app.py
+
+Boots without an API key. Users paste OPENAI_API_KEY on the welcome screen.
 """
 
 from __future__ import annotations
 
 import streamlit as st
 
-from src.cache_manager import configure_cache
 from src.config import (
     APP_NAME,
     APP_SUBTITLE,
@@ -15,7 +16,6 @@ from src.config import (
     NAV_PAGES,
     refresh_secrets_from_streamlit,
 )
-from src.pages import PAGE_RENDERERS, render_welcome
 from src.session import init_session
 from src.ui.styles import inject_global_styles
 
@@ -26,20 +26,32 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-refresh_secrets_from_streamlit()
+# Optional secrets — must never crash if secrets.toml is absent
+try:
+    refresh_secrets_from_streamlit()
+except Exception:
+    pass
+
 init_session()
 inject_global_styles()
 
-# Register cache once per backend choice (safe across reruns)
-configure_cache(st.session_state.cache_backend)
+# Cache is optional; failure must not block the welcome / runtime-key flow
+try:
+    from src.cache_manager import configure_cache
+
+    configure_cache(st.session_state.cache_backend)
+except Exception as exc:  # noqa: BLE001
+    st.session_state["_cache_warning"] = str(exc)[:200]
 
 if not st.session_state.authenticated:
+    from src.pages.welcome import render_welcome
+
     render_welcome()
     st.stop()
 
-# ---------------------------------------------------------------------------
-# Sidebar navigation
-# ---------------------------------------------------------------------------
+# Heavy page imports only after the user has entered the app
+from src.pages import PAGE_RENDERERS  # noqa: E402
+
 with st.sidebar:
     st.markdown(f'<p class="fw-side-brand">{APP_NAME}</p>', unsafe_allow_html=True)
     st.markdown(
@@ -69,12 +81,9 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
     st.caption("Model: " + str(st.session_state.model_name))
-    if st.button("Back to welcome", use_container_width=True):
+    if st.button("Change API key / welcome", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
 
-# ---------------------------------------------------------------------------
-# Main page
-# ---------------------------------------------------------------------------
 renderer = PAGE_RENDERERS.get(st.session_state.page, PAGE_RENDERERS["dashboard"])
 renderer()

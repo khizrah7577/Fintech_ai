@@ -15,20 +15,24 @@ load_dotenv(ROOT_DIR / ".env")
 def _secret_or_env(name: str, default: str = "") -> str:
     """Prefer Streamlit Cloud secrets, then environment / .env.
 
-    Streamlit is imported lazily so unit tests and non-UI modules do not
-    initialize a Streamlit runtime at import time.
+    Never crash when secrets.toml is missing — Streamlit raises on bare
+    `st.secrets` access when no secrets are configured.
     """
     env_val = (os.getenv(name, default) or default).strip()
     try:
         from streamlit import runtime
 
-        if runtime.exists():
-            import streamlit as st
+        if not runtime.exists():
+            return env_val
+        import streamlit as st
 
-            if hasattr(st, "secrets") and name in st.secrets:
-                value = st.secrets.get(name)
-                if value is not None and str(value).strip():
-                    return str(value).strip()
+        # Any access to st.secrets can raise if no secrets are configured.
+        try:
+            value = st.secrets[name]  # type: ignore[index]
+        except Exception:
+            return env_val
+        if value is not None and str(value).strip():
+            return str(value).strip()
     except Exception:
         pass
     return env_val
@@ -103,16 +107,8 @@ SUPPORTED_MODELS = [
 
 DEFAULT_TEMPERATURE = 0.3
 
-# Writable cache path (Cloud-safe)
-_SQLITE_DIR = ROOT_DIR
-try:
-    probe = ROOT_DIR / ".write_probe"
-    probe.write_text("ok", encoding="utf-8")
-    probe.unlink(missing_ok=True)
-except OSError:
-    _SQLITE_DIR = Path(tempfile.gettempdir())
-
-SQLITE_CACHE_PATH = str(_SQLITE_DIR / "finwise_llm_cache.db")
+# Prefer temp dir on Streamlit Cloud (safer write permissions)
+SQLITE_CACHE_PATH = str(Path(tempfile.gettempdir()) / "finwise_llm_cache.db")
 
 HEALTH_BANDS = [
     (80, 100, "Strong", "strong"),

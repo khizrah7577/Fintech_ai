@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.config import DEFAULT_TEMPERATURE, OPENAI_API_KEY, OPENAI_MODEL
+import src.config as config
 
 
 def init_session() -> None:
@@ -21,8 +21,8 @@ def init_session() -> None:
         "budget_targets": None,
         "savings_target": None,
         "session_api_key": "",
-        "model_name": OPENAI_MODEL,
-        "temperature": DEFAULT_TEMPERATURE,
+        "model_name": config.OPENAI_MODEL,
+        "temperature": config.DEFAULT_TEMPERATURE,
         "cache_backend": "memory",
         "show_api_key": False,
         "connection_status": "",
@@ -34,10 +34,11 @@ def init_session() -> None:
 
 
 def effective_api_key() -> str:
+    """Session key first, then secrets/.env — never required at import time."""
     override = (st.session_state.get("session_api_key") or "").strip()
     if override:
         return override
-    return (OPENAI_API_KEY or "").strip()
+    return (config.OPENAI_API_KEY or "").strip()
 
 
 def has_api_key() -> bool:
