@@ -1,17 +1,14 @@
-# Streamlit Community Cloud — use Python 3.12 in Advanced settings.
-# streamlit is provided by Cloud; pin a compatible range for local runs.
-streamlit>=1.32.0,<2
-langchain==0.3.14
-langchain-core==0.3.29
-langchain-openai==0.2.14
-langchain-community==0.3.14
-openai==1.59.9
-pydantic==2.10.4
-python-dotenv==1.0.1
-pandas==2.2.3
-plotly==5.24.1
-reportlab==4.2.5
-tiktoken==0.8.0
-httpx==0.28.1
-tenacity==9.0.0
-langsmith>=0.1.125,<0.3
+# Streamlit Community Cloud
+# IMPORTANT: In app Advanced settings, set Python version to 3.12
+# Do not pin streamlit — Cloud already provides it.
+
+python-dotenv>=1.0.1
+pandas>=2.2.0,<3
+plotly>=5.24.0,<6
+reportlab>=4.2.0,<5
+openai>=1.59.0,<2
+tiktoken>=0.8.0,<1
+langchain>=0.3.14,<0.4
+langchain-core>=0.3.29,<0.4
+langchain-openai>=0.2.14,<0.3
+langchain-community>=0.3.14,<0.4
