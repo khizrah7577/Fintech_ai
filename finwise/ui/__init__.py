@@ -3,7 +3,6 @@
 from finwise.ui.components import (
     disclaimer_banner,
     empty_state,
-    metric_card_row,
     page_header,
     risk_badge,
     score_band_caption,
@@ -15,7 +14,6 @@ __all__ = [
     "page_header",
     "disclaimer_banner",
     "empty_state",
-    "metric_card_row",
     "risk_badge",
     "score_band_caption",
 ]

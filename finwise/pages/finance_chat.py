@@ -1,4 +1,4 @@
-"""Conversational AI Finance Assistant grounded in user data."""
+"""AI Financial Advisor — conversational Q&A grounded in user data."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ SUGGESTIONS = [
 
 def render_finance_chat() -> None:
     page_header(
-        "AI Finance Assistant",
+        "AI Financial Advisor",
         "Ask questions about your submitted numbers — educational answers only.",
     )
     disclaimer_banner()
@@ -35,15 +35,15 @@ def render_finance_chat() -> None:
     if not results:
         empty_state(
             "No financial snapshot yet",
-            "Complete Financial Analysis first so the assistant can use your real figures.",
+            "Save your monthly snapshot under Transactions so the advisor can use real figures.",
         )
-        if st.button("Go to Financial Analysis"):
-            st.session_state.page = "analysis"
+        if st.button("Go to Transactions"):
+            st.session_state.page = "transactions"
             st.rerun()
         return
 
     if not has_api_key():
-        st.error("Configure an OpenAI API key in Settings before chatting.")
+        st.error("Configure an OpenAI API key (welcome screen or Settings) before chatting.")
         return
 
     top = st.columns([3, 1])
@@ -58,6 +58,7 @@ def render_finance_chat() -> None:
         if scols[i % 2].button(prompt, key=f"sug_{i}", use_container_width=True):
             _ask(prompt, results, analysis)
 
+    st.markdown('<div class="fw-card">', unsafe_allow_html=True)
     for idx, msg in enumerate(st.session_state.chat_messages):
         role = msg["role"]
         css = "fw-chat-user" if role == "user" else "fw-chat-ai"
@@ -71,6 +72,7 @@ def render_finance_chat() -> None:
                 mime="text/plain",
                 key=f"dl_reply_{idx}",
             )
+    st.markdown("</div>", unsafe_allow_html=True)
 
     question = st.chat_input("Ask about your budget…")
     if question:
@@ -87,9 +89,7 @@ def _ask(question: str, results: dict, analysis: dict | None) -> None:
                 temperature=st.session_state.temperature,
                 streaming=False,
             )
-            answer = answer_finance_question(
-                question, results, analysis, llm=llm
-            )
+            answer = answer_finance_question(question, results, analysis, llm=llm)
             st.session_state.chat_messages.append(
                 {"role": "assistant", "content": answer}
             )

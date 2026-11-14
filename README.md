@@ -2,65 +2,42 @@
 
 **AI-Powered Personal Financial Analysis and Smart Budget Assistant**
 
-A professional Streamlit + LangChain FinTech app: deterministic Python calculations, structured LLM JSON insights, live streaming recommendations, dual caching, and a multi-page navy SaaS dashboard.
+Premium Streamlit fintech app with horizontal top navigation, KPI dashboards, analytics, budget planner, AI advisor, and reports.
 
-> Educational prototype only. Not financial advice. No bank connections or guaranteed outcomes.
+> Educational prototype only. Not financial advice.
 
 **GitHub:** https://github.com/khizrah7577/Fintech_ai
 
-## Features
+## Pages (top navigation)
 
-- Monthly income / expense form with currency and financial goals
-- Deterministic Python ratios + preliminary health score (0-100)
-- LangChain LCEL analysis chain (PromptTemplate | ChatOpenAI | StrOutputParser)
-- ChatPromptTemplate, System / Human / AI messages, streaming recommendations
-- Structured JSON insights with safe parsing
-- In-memory + SQLite LLM caching
-- Pages: Dashboard, Analysis, AI Chat, Budget Planner, Insights, Reports, Settings
-- CSV / PDF report export
+1. Dashboard  
+2. Transactions (monthly snapshot + transaction list)  
+3. Budget Planner  
+4. Financial Analytics  
+5. AI Financial Advisor  
+6. Reports (CSV / PDF)  
+7. Settings  
 
-## Technologies
-
-- UI: Streamlit 1.41 + Plotly
-- LLM: LangChain 0.3 + langchain-openai + OpenAI
-- Config: python-dotenv + Streamlit Secrets
-- Reports: reportlab, CSV
-- Python: **3.12** (required for Streamlit Cloud)
-
-## Local setup
+## Run locally
 
 ```powershell
 cd D:\langchain\Fintech_ai
 py -3.12 -m venv .venv
 .\.venv\Scripts\activate
 pip install -r requirements.txt
-copy .env.example .env
-# Edit .env and set OPENAI_API_KEY
 streamlit run app.py
 ```
 
-## Streamlit Community Cloud
+Paste your OpenAI API key on the welcome screen (session-only).
 
-1. Open https://share.streamlit.io and create a New app.
-2. Repository: `khizrah7577/Fintech_ai`, branch `main`, main file `app.py`.
-3. Advanced settings:
-   - Python version: **3.12** (do not use 3.13 or 3.14)
-   - Secrets:
+## Streamlit Cloud
 
-```toml
-OPENAI_API_KEY = "sk-..."
-OPENAI_MODEL = "gpt-4o-mini"
-```
+- Repo: `khizrah7577/Fintech_ai`
+- Branch: `main`
+- Main file: `app.py`
+- Python: **3.12**
+- Secrets optional (`OPENAI_API_KEY`) — runtime key also supported
 
-4. Deploy.
+## Package layout
 
-### Why Python 3.12?
-
-The Cloud `TypeError` came from importing deprecated `langchain.chains.LLMChain` under newer Python / Pydantic evaluation. This app now uses LCEL (no LLMChain) and pins packages tested on Python 3.12.
-
-## Known limitations
-
-- Educational insights only
-- No live bank connections
-- Reports cover the current session only
-- SQLite cache is ephemeral on Streamlit Cloud free tier
+Application code lives in `finwise/` (not `src/`) to avoid Streamlit Cloud’s `/mount/src` path conflict.

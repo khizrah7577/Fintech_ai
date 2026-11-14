@@ -1,4 +1,4 @@
-"""Welcome screen — collect OpenAI API key at runtime (no secrets required)."""
+"""Welcome screen — collect OpenAI API key at runtime."""
 
 from __future__ import annotations
 
@@ -16,12 +16,12 @@ def render_welcome() -> None:
         st.markdown(
             f"""
             <div class="fw-welcome-card">
-              <p style="font-family:'Instrument Sans','DM Sans',sans-serif;font-size:2.35rem;
-                 font-weight:700;color:#0F1C3F;margin:0;letter-spacing:-0.03em;">{APP_NAME}</p>
+              <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:2.35rem;
+                 font-weight:800;color:#0B1F3A;margin:0;letter-spacing:-0.03em;">{APP_NAME}</p>
               <p style="color:#64748B;margin:0.35rem 0 1.2rem 0;">{APP_SUBTITLE}</p>
               <p style="color:#0F172A;line-height:1.55;">
-                Welcome to FinWise AI — paste your OpenAI API key below to start.
-                The key stays in this browser session only and is never written to the repo.
+                Paste your OpenAI API key to unlock the premium dashboard, analytics,
+                budget planner, and AI financial advisor. The key stays in this session only.
               </p>
             </div>
             """,
@@ -30,8 +30,7 @@ def render_welcome() -> None:
         st.write("")
         st.markdown("#### Enter your OpenAI API key")
         st.caption(
-            "Required at runtime. Optional: also set `OPENAI_API_KEY` in Streamlit Secrets "
-            "or a local `.env` so you can leave this blank."
+            "Required at runtime. Optional: also set `OPENAI_API_KEY` in Streamlit Secrets."
         )
 
         show = st.toggle("Show API key", value=False, key="welcome_show_key")
@@ -40,14 +39,19 @@ def render_welcome() -> None:
             type="default" if show else "password",
             value=st.session_state.get("session_api_key", ""),
             placeholder="sk-…",
-            help="Stored only in Streamlit session state for this visit.",
         )
 
         model = st.selectbox(
             "Model",
             list(
                 dict.fromkeys(
-                    [st.session_state.get("model_name", OPENAI_MODEL), OPENAI_MODEL, "gpt-4o-mini", "gpt-4o", "gpt-4.1-mini"]
+                    [
+                        st.session_state.get("model_name", OPENAI_MODEL),
+                        OPENAI_MODEL,
+                        "gpt-4o-mini",
+                        "gpt-4o",
+                        "gpt-4.1-mini",
+                    ]
                 )
             ),
             index=0,
@@ -80,23 +84,12 @@ def render_welcome() -> None:
                     st.error("Paste your OpenAI API key above to continue.")
                 else:
                     st.session_state.authenticated = True
-                    st.session_state._welcome_seen = True
                     st.session_state.page = "dashboard"
                     st.rerun()
 
         if st.session_state.get("connection_status"):
             st.info(st.session_state.connection_status)
-
         st.caption(DISCLAIMER_COMPACT)
-        with st.expander("How to get an API key"):
-            st.markdown(
-                """
-1. Create an account at [platform.openai.com](https://platform.openai.com).
-2. Create a secret key (`sk-…`).
-3. Paste it above and click **Enter FinWise AI**.
-4. Do not commit keys to GitHub.
-                """
-            )
 
     with right:
         st.markdown(
@@ -107,12 +100,12 @@ def render_welcome() -> None:
               <div class="orb orb-c"></div>
               <div class="fw-botanic"></div>
               <div class="fw-float-card a">
-                Runtime API key
-                <span class="mini">Session-only · not stored in Git</span>
+                Premium dashboard
+                <span class="mini">KPIs · Charts · Insights</span>
               </div>
               <div class="fw-float-card b">
-                Educational AI insights
-                <span class="mini">LangChain · Structured JSON</span>
+                Runtime API key
+                <span class="mini">Session-only · not in Git</span>
               </div>
             </div>
             """,

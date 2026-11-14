@@ -25,14 +25,14 @@ def render_settings() -> None:
     page_header("Settings", "API configuration, model controls, and session tools.")
     disclaimer_banner()
 
-    st.markdown("### OpenAI API")
-    env_masked = mask_api_key(OPENAI_API_KEY)
-    st.write(f"`.env` key: `{env_masked}`")
+    st.markdown('<div class="fw-card">', unsafe_allow_html=True)
+    st.markdown("##### OpenAI API")
+    st.write(f"`.env` / secrets key: `{mask_api_key(OPENAI_API_KEY)}`")
 
     show = st.toggle("Show session API key", value=st.session_state.show_api_key)
     st.session_state.show_api_key = show
     st.session_state.session_api_key = st.text_input(
-        "Session API key override (optional)",
+        "Session API key (runtime)",
         value=st.session_state.session_api_key,
         type="default" if show else "password",
         help="Stored only in Streamlit session state for this browser session.",
@@ -65,38 +65,43 @@ def render_settings() -> None:
                 f"✅ {msg}" if ok else f"❌ {friendly_error(Exception(msg))}"
             )
     with t2:
-        status = "Connected key present" if effective_api_key() else "No key configured"
+        status = "Key present" if effective_api_key() else "No key configured"
         st.metric("Connection", status)
 
     if st.session_state.get("connection_status"):
         st.info(st.session_state.connection_status)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("### LLM cache")
+    st.markdown('<div class="fw-card">', unsafe_allow_html=True)
+    st.markdown("##### LLM cache")
     labels = list(CACHE_OPTIONS.keys())
     current_backend = st.session_state.cache_backend
-    # reverse lookup label
     current_label = next(
         (lab for lab, val in CACHE_OPTIONS.items() if val == current_backend),
         labels[0],
     )
     choice = st.radio("Cache backend", labels, index=labels.index(current_label))
     st.session_state.cache_backend = CACHE_OPTIONS[choice]
-    msg = configure_cache(st.session_state.cache_backend)
-    st.caption(msg)
+    try:
+        msg = configure_cache(st.session_state.cache_backend)
+        st.caption(msg)
+    except Exception as exc:  # noqa: BLE001
+        st.warning(str(exc)[:200])
     modes = describe_cache_modes()
     st.write(f"- Memory: {modes['memory']}")
     st.write(f"- SQLite: {modes['sqlite']}")
-    st.caption(f"Active backend: `{get_active_backend()}` · DB path: `{SQLITE_CACHE_PATH}`")
+    st.caption(f"Active: `{get_active_backend()}` · DB: `{SQLITE_CACHE_PATH}`")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("### Session")
+    st.markdown("##### Session")
     if not st.session_state.confirm_reset:
         if st.button("Reset session…", use_container_width=True):
             st.session_state.confirm_reset = True
             st.rerun()
     else:
         st.warning(
-            "This clears analysis, chat, and form memory. "
-            "It does **not** delete the SQLite cache file or your `.env` key."
+            "Clears analysis, chat, and form memory. "
+            "Does **not** delete SQLite cache or your `.env` key."
         )
         c1, c2 = st.columns(2)
         if c1.button("Confirm reset", type="primary", use_container_width=True):
@@ -107,21 +112,10 @@ def render_settings() -> None:
             st.session_state.confirm_reset = False
             st.rerun()
 
-    st.markdown("### Application")
+    if st.button("Return to welcome / change API key", use_container_width=True):
+        st.session_state.authenticated = False
+        st.rerun()
+
     st.write(f"**{APP_NAME}**")
     st.caption(APP_SUBTITLE)
     st.caption(DISCLAIMER_COMPACT)
-    st.markdown(
-        """
-**Tech stack:** Streamlit · LangChain LCEL (`ChatOpenAI`, `PromptTemplate`,
-`ChatPromptTemplate`, streaming) · OpenAI · python-dotenv
-
-**Streamlit Cloud secrets** (Settings → Secrets):
-```toml
-OPENAI_API_KEY = "sk-..."
-OPENAI_MODEL = "gpt-4o-mini"
-```
-
-Deploy with **Python 3.12** in Advanced settings.
-        """
-    )

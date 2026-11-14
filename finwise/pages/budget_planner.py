@@ -13,7 +13,7 @@ from finwise.utils import format_money
 def render_budget_planner() -> None:
     page_header(
         "Budget Planner",
-        "Compare your current spend with adjustable educational category targets.",
+        "Compare current spend with adjustable educational category targets.",
     )
     disclaimer_banner()
 
@@ -21,7 +21,7 @@ def render_budget_planner() -> None:
     if not results:
         empty_state(
             "Need a financial snapshot",
-            "Run Financial Analysis first so we can plan against your real income.",
+            "Save income and expenses under Transactions first.",
         )
         return
 
@@ -34,13 +34,13 @@ def render_budget_planner() -> None:
     if st.session_state.savings_target is None:
         st.session_state.savings_target = round(income * 0.10, 2)
 
-    st.markdown("### Snapshot")
     m1, m2, m3 = st.columns(3)
     m1.metric("Monthly income", format_money(income, sym))
     m2.metric("Current expenses", format_money(results["total_expenses"], sym))
     m3.metric("Remaining (actual)", format_money(results["remaining_income"], sym))
 
-    st.markdown("### Adjust category targets")
+    st.markdown('<div class="fw-card">', unsafe_allow_html=True)
+    st.markdown("##### Adjust category targets")
     st.caption("Defaults follow an educational guideline mix — edit freely and recalculate.")
     targets = dict(st.session_state.budget_targets)
     cols = st.columns(3)
@@ -60,10 +60,10 @@ def render_budget_planner() -> None:
         value=float(st.session_state.savings_target),
         step=25.0,
     )
-
     if st.button("Recalculate budget", type="primary"):
         st.session_state.budget_targets = targets
         st.session_state.savings_target = savings_target
+    st.markdown("</div>", unsafe_allow_html=True)
 
     plan = recalculate_budget(
         income,
@@ -72,27 +72,30 @@ def render_budget_planner() -> None:
         st.session_state.savings_target,
     )
 
-    st.markdown("### Planned results")
     p1, p2, p3, p4 = st.columns(4)
     p1.metric("Planned expenses", format_money(plan["total_planned_expenses"], sym))
     p2.metric("Savings target", format_money(plan["savings_target"], sym))
     p3.metric("Remaining after plan", format_money(plan["remaining_after_plan"], sym))
     p4.metric("Current expenses", format_money(plan["total_current_expenses"], sym))
 
-    st.markdown("### Category check")
+    st.markdown("##### Category check")
     for key, label in EXPENSE_CATEGORIES:
         cur = plan["current"].get(key, 0)
         tgt = plan["targets"].get(key, 0)
         over = cur > tgt
-        line = f"**{label}** — current {format_money(cur, sym)} · target {format_money(tgt, sym)}"
+        pct = min(1.0, (cur / tgt) if tgt > 0 else (1.0 if cur > 0 else 0.0))
+        st.write(f"**{label}** — current {format_money(cur, sym)} · target {format_money(tgt, sym)}")
+        st.progress(pct)
         if over:
-            st.warning(line + " · overspending")
-        else:
-            st.success(line)
+            st.warning("Overspending vs target")
 
     if plan["warnings"]:
-        st.markdown("### Warnings")
+        st.markdown("##### Alerts")
         for w in plan["warnings"]:
             st.warning(w)
 
-    disclaimer_banner()
+    analysis = st.session_state.get("analysis")
+    if analysis and analysis.get("budget_recommendations"):
+        st.markdown("##### AI budget optimization tips")
+        for tip in analysis["budget_recommendations"]:
+            st.markdown(f"- {tip}")

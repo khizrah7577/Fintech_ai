@@ -13,11 +13,7 @@ load_dotenv(ROOT_DIR / ".env")
 
 
 def _secret_or_env(name: str, default: str = "") -> str:
-    """Prefer Streamlit Cloud secrets, then environment / .env.
-
-    Never crash when secrets.toml is missing — Streamlit raises on bare
-    `st.secrets` access when no secrets are configured.
-    """
+    """Prefer Streamlit Cloud secrets, then environment / .env."""
     env_val = (os.getenv(name, default) or default).strip()
     try:
         from streamlit import runtime
@@ -26,7 +22,6 @@ def _secret_or_env(name: str, default: str = "") -> str:
             return env_val
         import streamlit as st
 
-        # Any access to st.secrets can raise if no secrets are configured.
         try:
             value = st.secrets[name]  # type: ignore[index]
         except Exception:
@@ -39,7 +34,6 @@ def _secret_or_env(name: str, default: str = "") -> str:
 
 
 def refresh_secrets_from_streamlit() -> None:
-    """Reload API settings after Streamlit is running (optional)."""
     global OPENAI_API_KEY, OPENAI_MODEL
     OPENAI_API_KEY = _secret_or_env("OPENAI_API_KEY", OPENAI_API_KEY)
     OPENAI_MODEL = _secret_or_env("OPENAI_MODEL", OPENAI_MODEL) or "gpt-4o-mini"
@@ -50,7 +44,7 @@ OPENAI_MODEL = _secret_or_env("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
 
 APP_NAME = "FinWise AI"
 APP_SUBTITLE = "AI-Powered Personal Financial Analysis and Smart Budget Assistant"
-APP_TAGLINE = "Clarity for your month — then plan the next one."
+APP_TAGLINE = "Intelligence for every dollar you earn and spend."
 
 EDUCATIONAL_DISCLAIMER = (
     "Educational prototype only. FinWise AI does not provide guaranteed investment "
@@ -73,6 +67,20 @@ EXPENSE_CATEGORIES = [
     ("loan_debt", "Loan / Debt"),
     ("other", "Other"),
 ]
+
+CATEGORY_ICONS = {
+    "housing": "🏠",
+    "food": "🛒",
+    "transportation": "🚗",
+    "utilities": "💡",
+    "education": "📚",
+    "healthcare": "❤️",
+    "entertainment": "🎬",
+    "loan_debt": "💳",
+    "other": "📦",
+    "income": "💰",
+    "savings": "🏦",
+}
 
 FINANCIAL_GOALS = [
     "Save money",
@@ -106,8 +114,6 @@ SUPPORTED_MODELS = [
 ]
 
 DEFAULT_TEMPERATURE = 0.3
-
-# Prefer temp dir on Streamlit Cloud (safer write permissions)
 SQLITE_CACHE_PATH = str(Path(tempfile.gettempdir()) / "finwise_llm_cache.db")
 
 HEALTH_BANDS = [
@@ -117,17 +123,21 @@ HEALTH_BANDS = [
     (0, 39, "High attention", "attention"),
 ]
 
-# Modern fintech SaaS palette — navy / charcoal / blue accents
+# Premium light fintech — navy + emerald + mint/cyan
 COLORS = {
-    "bg": "#F4F6F9",
-    "sidebar": "#0B1220",
-    "sidebar_soft": "#121A2B",
-    "primary": "#1B4DFF",
-    "primary_dark": "#0F1C3F",
-    "secondary": "#3B82F6",
-    "accent": "#6366F1",
+    "bg": "#F7FAFC",
+    "surface": "#FFFFFF",
+    "navy": "#0B1F3A",
+    "navy_soft": "#132B4D",
+    "primary": "#0F766E",
+    "primary_dark": "#0B1F3A",
+    "emerald": "#059669",
+    "mint": "#D1FAE5",
+    "cyan": "#06B6D4",
+    "secondary": "#0D9488",
+    "accent": "#14B8A6",
     "sage": "#94A3B8",
-    "light_sage": "#E8EEF7",
+    "light_sage": "#ECFDF5",
     "cream": "#F8FAFC",
     "card": "#FFFFFF",
     "text": "#0F172A",
@@ -139,14 +149,17 @@ COLORS = {
     "success": "#10B981",
     "positive": "#059669",
     "negative": "#DC2626",
+    "sidebar": "#0B1F3A",
+    "sidebar_soft": "#132B4D",
 }
 
+# Horizontal top navigation (primary)
 NAV_PAGES = [
-    ("dashboard", "Home / Dashboard"),
-    ("analysis", "Financial Analysis"),
-    ("chat", "AI Finance Assistant"),
+    ("dashboard", "Dashboard"),
+    ("transactions", "Transactions"),
     ("budget", "Budget Planner"),
-    ("insights", "Financial Insights"),
+    ("analytics", "Financial Analytics"),
+    ("chat", "AI Financial Advisor"),
     ("reports", "Reports"),
     ("settings", "Settings"),
 ]

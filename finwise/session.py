@@ -32,6 +32,17 @@ def init_session() -> None:
         if key not in st.session_state:
             st.session_state[key] = value
 
+    # Map legacy page ids from earlier builds
+    legacy = {
+        "analysis": "transactions",
+        "insights": "analytics",
+        "Home / Dashboard": "dashboard",
+    }
+    page = st.session_state.get("page")
+    if page in legacy:
+        st.session_state.page = legacy[page]
+
+
 
 def effective_api_key() -> str:
     """Session key first, then secrets/.env — never required at import time."""
