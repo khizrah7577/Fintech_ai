@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.config import EXPENSE_CATEGORIES, health_band_label
-from src.ui.components import disclaimer_banner, empty_state, page_header, risk_badge
-from src.utils import format_money
+from finwise.config import EXPENSE_CATEGORIES, health_band_label
+from finwise.ui.components import disclaimer_banner, empty_state, page_header, risk_badge
+from finwise.utils import format_money
 
 
 def render_insights() -> None:

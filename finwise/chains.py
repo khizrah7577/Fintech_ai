@@ -15,15 +15,15 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
 from langchain_openai import ChatOpenAI
 
-import src.config as config
-from src.prompts import (
+import finwise.config as config
+from finwise.prompts import (
     ANALYSIS_CHAT_TEMPLATE,
     ANALYSIS_PROMPT,
     CHAT_PROMPT,
     MESSAGE_DEMO_SYSTEM,
     NARRATIVE_CHAT_TEMPLATE,
 )
-from src.utils import parse_analysis_json
+from finwise.utils import parse_analysis_json
 
 
 def _prompt_inputs(inputs: dict[str, Any]) -> dict[str, Any]:

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.config import APP_NAME, health_band_label
-from src.ui.components import (
+from finwise.config import APP_NAME, health_band_label
+from finwise.ui.components import (
     disclaimer_banner,
     empty_state,
     expense_pie,

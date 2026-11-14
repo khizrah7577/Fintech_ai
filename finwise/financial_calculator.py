@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.config import BUDGET_GUIDELINES, EXPENSE_CATEGORIES
+from finwise.config import BUDGET_GUIDELINES, EXPENSE_CATEGORIES
 
 
 def safe_ratio(numerator: float, denominator: float) -> float:

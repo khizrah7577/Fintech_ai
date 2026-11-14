@@ -9,9 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.financial_calculator import calculate_financials, infer_risk_from_metrics
-from src.prompts import ANALYSIS_PROMPT
-from src.utils import parse_analysis_json
+from finwise.financial_calculator import calculate_financials, infer_risk_from_metrics
+from finwise.prompts import ANALYSIS_PROMPT
+from finwise.utils import parse_analysis_json
 
 
 def _base_expenses(**overrides):

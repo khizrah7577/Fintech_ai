@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.cache_manager import configure_cache, describe_cache_modes, get_active_backend
-from src.chains import test_api_connection
-from src.config import (
+from finwise.cache_manager import configure_cache, describe_cache_modes, get_active_backend
+from finwise.chains import test_api_connection
+from finwise.config import (
     APP_NAME,
     APP_SUBTITLE,
     CACHE_OPTIONS,
@@ -16,9 +16,9 @@ from src.config import (
     SUPPORTED_MODELS,
     mask_api_key,
 )
-from src.session import effective_api_key, reset_session_data
-from src.ui.components import disclaimer_banner, page_header
-from src.utils import friendly_error
+from finwise.session import effective_api_key, reset_session_data
+from finwise.ui.components import disclaimer_banner, page_header
+from finwise.utils import friendly_error
 
 
 def render_settings() -> None:

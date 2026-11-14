@@ -5,7 +5,7 @@ from __future__ import annotations
 from langchain.globals import set_llm_cache
 from langchain_community.cache import InMemoryCache, SQLiteCache
 
-from src.config import SQLITE_CACHE_PATH
+from finwise.config import SQLITE_CACHE_PATH
 
 _active_backend: str | None = None
 _memory_cache: InMemoryCache | None = None

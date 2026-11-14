@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.config import APP_NAME, APP_SUBTITLE, DISCLAIMER_COMPACT, OPENAI_MODEL
-from src.session import effective_api_key
-from src.utils import friendly_error
+from finwise.config import APP_NAME, APP_SUBTITLE, DISCLAIMER_COMPACT, OPENAI_MODEL
+from finwise.session import effective_api_key
+from finwise.utils import friendly_error
 
 
 def render_welcome() -> None:
@@ -61,7 +61,7 @@ def render_welcome() -> None:
                     st.session_state.connection_status = "❌ Paste an API key first."
                 else:
                     try:
-                        from src.chains import test_api_connection
+                        from finwise.chains import test_api_connection
 
                         ok, msg = test_api_connection(
                             api_key=effective_api_key(),

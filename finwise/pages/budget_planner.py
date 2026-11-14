@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.config import EXPENSE_CATEGORIES
-from src.financial_calculator import recalculate_budget, recommend_budget_allocation
-from src.ui.components import disclaimer_banner, empty_state, page_header
-from src.utils import format_money
+from finwise.config import EXPENSE_CATEGORIES
+from finwise.financial_calculator import recalculate_budget, recommend_budget_allocation
+from finwise.ui.components import disclaimer_banner, empty_state, page_header
+from finwise.utils import format_money
 
 
 def render_budget_planner() -> None:

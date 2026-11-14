@@ -1,6 +1,6 @@
-# Pinned for Streamlit Community Cloud + Python 3.12
-# Do NOT deploy on Python 3.14 — select Python 3.12 in Cloud Advanced settings.
-streamlit==1.41.1
+# Streamlit Community Cloud — use Python 3.12 in Advanced settings.
+# streamlit is provided by Cloud; pin a compatible range for local runs.
+streamlit>=1.32.0,<2
 langchain==0.3.14
 langchain-core==0.3.29
 langchain-openai==0.2.14

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.config import COLORS
+from finwise.config import COLORS
 
 
 def inject_global_styles() -> None:

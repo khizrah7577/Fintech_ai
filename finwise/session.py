@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-import src.config as config
+import finwise.config as config
 
 
 def init_session() -> None:

@@ -1,6 +1,6 @@
 """Shared Streamlit UI helpers for FinWise AI."""
 
-from src.ui.components import (
+from finwise.ui.components import (
     disclaimer_banner,
     empty_state,
     metric_card_row,
@@ -8,7 +8,7 @@ from src.ui.components import (
     risk_badge,
     score_band_caption,
 )
-from src.ui.styles import inject_global_styles
+from finwise.ui.styles import inject_global_styles
 
 __all__ = [
     "inject_global_styles",

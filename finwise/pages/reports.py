@@ -6,8 +6,8 @@ from datetime import datetime
 
 import streamlit as st
 
-from src.ui.components import disclaimer_banner, empty_state, overview_metrics, page_header, risk_badge
-from src.utils import build_csv_report, build_pdf_report, friendly_error
+from finwise.ui.components import disclaimer_banner, empty_state, overview_metrics, page_header, risk_badge
+from finwise.utils import build_csv_report, build_pdf_report, friendly_error
 
 
 def render_reports() -> None:

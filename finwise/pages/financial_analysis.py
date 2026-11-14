@@ -4,21 +4,21 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.chains import (
+from finwise.chains import (
     build_llm,
     run_message_demo,
     run_structured_analysis,
     stream_recommendations,
 )
-from src.config import (
+from finwise.config import (
     CURRENCIES,
     FINANCIAL_GOALS,
     currency_symbol,
     health_band_label,
 )
-from src.financial_calculator import calculate_financials, validate_inputs
-from src.session import effective_api_key, has_api_key
-from src.ui.components import (
+from finwise.financial_calculator import calculate_financials, validate_inputs
+from finwise.session import effective_api_key, has_api_key
+from finwise.ui.components import (
     disclaimer_banner,
     expense_pie,
     overview_metrics,
@@ -26,7 +26,7 @@ from src.ui.components import (
     risk_badge,
     score_band_caption,
 )
-from src.utils import friendly_error
+from finwise.utils import friendly_error
 
 
 def render_financial_analysis() -> None:

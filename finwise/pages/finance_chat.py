@@ -6,10 +6,10 @@ import html
 
 import streamlit as st
 
-from src.chains import answer_finance_question, build_llm
-from src.session import effective_api_key, has_api_key
-from src.ui.components import disclaimer_banner, empty_state, page_header
-from src.utils import friendly_error
+from finwise.chains import answer_finance_question, build_llm
+from finwise.session import effective_api_key, has_api_key
+from finwise.ui.components import disclaimer_banner, empty_state, page_header
+from finwise.utils import friendly_error
 
 SUGGESTIONS = [
     "Where does most of my money go?",

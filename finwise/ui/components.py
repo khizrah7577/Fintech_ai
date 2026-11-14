@@ -8,8 +8,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from src.config import COLORS, EDUCATIONAL_DISCLAIMER, EXPENSE_CATEGORIES, health_band_label
-from src.utils import format_money
+from finwise.config import COLORS, EDUCATIONAL_DISCLAIMER, EXPENSE_CATEGORIES, health_band_label
+from finwise.utils import format_money
 
 
 def page_header(title: str, subtitle: str = "") -> None:
